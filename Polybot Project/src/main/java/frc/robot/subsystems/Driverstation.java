@@ -16,6 +16,9 @@ public class Driverstation extends SubsystemBase {
     
   }
 
+  /**Provides current left joystick values for main xboxcontroller
+   * @param xaxis set to true to get x axis for left stick, or false for y axis values
+  */
   public double leftStick(boolean xaxis)
   {
     if (xaxis)
@@ -26,6 +29,9 @@ public class Driverstation extends SubsystemBase {
     }
   }
 
+  /**Provides current right joystick values for main xboxcontroller
+   * @param xaxis set to true to get x axis for right stick, or false for y axis values
+  */
   public double rightStick(boolean xaxis)
   {
     if (xaxis)

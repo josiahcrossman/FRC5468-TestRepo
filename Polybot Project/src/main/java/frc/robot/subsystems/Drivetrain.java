@@ -11,25 +11,52 @@ import edu.wpi.first.wpilibj.drive.DifferentialDrive;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants;
 
-public class drivetrain extends SubsystemBase {
+public class Drivetrain extends SubsystemBase {
   /** Creates a new drivetrain. */
   
   private CANSparkMax left = new CANSparkMax(Constants._leftdrivetrainportid, MotorType.kBrushless);
   private CANSparkMax right = new CANSparkMax(Constants._rightdrivetrainportid, MotorType.kBrushless);
 
+  private double lastFwd = 0;
+
   private DifferentialDrive drivetrain = new DifferentialDrive(left, right);
 
-  public drivetrain() 
+  /** Note: robot acceleration values are absolute, a minAccel of -1 and a maxAccel of 0 can still move the robot backwards*/
+  public double minAccel = -1;
+  /** Note: robot acceleration values are absolute, a minAccel of -1 and a maxAccel of 0 can still move the robot backwards*/
+  public double maxAccel = 1;
+
+  public Drivetrain() 
   {
     left.setInverted(false);
     right.setInverted(false);
   }
 
+  /**
+   * Uses arcadeDrive to drive the robot.
+   * Has built-in acceleration which can be changed with the drivetrains minAccel and maxAccel values.
+   */
   public void arcadeDrive(double forward, double turn)
   {
-    drivetrain.arcadeDrive(forward, turn);
+    double alteredfwd = forward;
+    double givenaccel = forward - lastFwd;
+
+    if (givenaccel > maxAccel)
+    {
+      alteredfwd = forward + maxAccel;
+    } 
+    else if (givenaccel < minAccel) 
+    {
+      alteredfwd = forward + minAccel;
+    }
+    drivetrain.arcadeDrive(alteredfwd, turn);
+    lastFwd = alteredfwd;
   }
 
+  /** 
+   * Sets the left wheels power to leftPower, and the right wheels power to rightPower
+   * !!! Due to the way I have it set up, tankDrive will not be accelerated properly!
+  **/
   public void tankDrive(double leftPower, double rightPower)
   {
     drivetrain.tankDrive(leftPower, rightPower);
@@ -39,10 +66,4 @@ public class drivetrain extends SubsystemBase {
   {
     drivetrain.stopMotor();
   }
-
-  // @Override
-  // public void periodic() 
-  // {
-  //   // This method will be called once per scheduler run
-  // }
 }
